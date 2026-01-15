@@ -6,12 +6,12 @@ using Trivia.Services;
 namespace Trivia.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/")]
     public class OpenTriviaTokenController(IOpenTriviaTokenService tokenService) : ControllerBase
     {
         private readonly IOpenTriviaTokenService _tokenService = tokenService;
 
-        [HttpGet("GetToken")]
+        [HttpGet("getToken")]
         public async Task<ActionResult<OpenTriviaTokenDTO>> GetToken()
         {
             var response = await _tokenService.RequestSessionToken();
@@ -29,7 +29,7 @@ namespace Trivia.Controllers
             };
         }
 
-        [HttpGet("RefreshToken")]
+        [HttpGet("refreshToken")]
         public async Task<ActionResult<OpenTriviaTokenDTO>> RefreshToken([FromQuery] string token)
         {
             var isValidToken = _tokenService.IsValidToken(token);

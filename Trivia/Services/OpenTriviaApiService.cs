@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Trivia.Models;
 using Trivia.Models.DTO;
@@ -10,7 +11,9 @@ namespace Trivia.Services
         Task<OpenTriviaResultsDTO> GetApiResult(int? category = null, string? difficulty = null, string? type = null, string? sessionToken = null, int amount = 10);
         List<OpenTriviaQuestion> GetQuestions();
         Task<(ResponseCode Code, List<OpenTriviaQuestion>? Questions)> GetQuestionsAsync(int? category = null, string? difficulty = null, string? type = null, string? sessionToken = null, int amount = 10);
-        bool CheckAnswer(string question, string answer);
+        OpenTriviaQuestionAnswer CheckSingleAnswer(string question, string answer);
+        OpenTriviaQuestionAnswer CheckSingleAnswer(int questionId, string answer);
+        List<OpenTriviaQuestionAnswer> CheckMultipleAnswers(Dictionary<int, string> questionAnswers);
     }
 
     public class OpenTriviaApiService : OpenTriviaBaseService, IOpenTriviaApiService
@@ -34,16 +37,16 @@ namespace Trivia.Services
             string endpoint = baseUrl + "api.php?" + $"amount={amount}";
 
             if (category != null)
-                endpoint += $"category={category}";
+                endpoint += $"&category={category}";
 
             if (difficulty != null)
-                endpoint += $"difficulty={difficulty}";
+                endpoint += $"&difficulty={difficulty}";
 
             if (type != null)
-                endpoint += $"type={type}";
+                endpoint += $"&type={type}";
 
             if (sessionToken != null)
-                endpoint += $"token={sessionToken}";
+                endpoint += $"&token={sessionToken}";
 
             return await GenericOpenTriviaGetJSON<OpenTriviaResultsDTO>(endpoint);
         }
@@ -56,6 +59,7 @@ namespace Trivia.Services
             {
                 var question = new OpenTriviaQuestion
                 {
+                    Id = result.Id,
                     Question = result.Question,
                     PossibleAnswers = [result.CorrectAnswer, .. result.IncorrectAnswers]
                 };
@@ -79,6 +83,7 @@ namespace Trivia.Services
 
             if (apiResponse != null && ResponseCode.Success == (ResponseCode)apiResponse.ResponseCode)
             {
+                DbContext.OpenTriviaResults.RemoveRange(DbContext.OpenTriviaResults);
                 DbContext.OpenTriviaResults.AddRange(apiResponse.Results!);
                 DbContext.SaveChanges();
             }
@@ -86,14 +91,42 @@ namespace Trivia.Services
             return (responseCode, GetQuestions());
         }
 
-        public bool CheckAnswer(string question, string answer)
+        public OpenTriviaQuestionAnswer CheckSingleAnswer(string question, string answer)
         {
             var findQuestion = DbContext.OpenTriviaResults.FirstOrDefault(i => i.Question == question);
+            var questionAnswer = new OpenTriviaQuestionAnswer
+            {
+                Id = findQuestion != null ? findQuestion.Id : 0,
+                Question = findQuestion != null ? findQuestion.Question : "",
+                IsCorrectAnswer = (findQuestion != null && findQuestion.CorrectAnswer == answer).ToString()
+            };
 
-            if (findQuestion == null) 
-                return false;
-
-            return findQuestion.CorrectAnswer == answer;
+            return questionAnswer;
         }
+        public OpenTriviaQuestionAnswer CheckSingleAnswer([FromQuery] int questionId, [FromQuery] string answer)
+        {
+            var findQuestion = DbContext.OpenTriviaResults.FirstOrDefault(i => i.Id == questionId);
+            var questionAnswer = new OpenTriviaQuestionAnswer
+            {
+                Id = findQuestion != null ? findQuestion.Id : 0,
+                Question = findQuestion != null ? findQuestion.Question : "",
+                IsCorrectAnswer = (findQuestion != null && findQuestion.CorrectAnswer == answer).ToString()
+            };
+
+            return questionAnswer;
+        }
+
+        public List<OpenTriviaQuestionAnswer> CheckMultipleAnswers(Dictionary<int, string> questionAnswers)
+        {
+            var results = new List<OpenTriviaQuestionAnswer>();
+
+            foreach (var qa in questionAnswers)
+            {
+                var result = CheckSingleAnswer(qa.Key, qa.Value);
+                results.Add(result);
+            }
+
+            return results;
+        }   
     }
 }

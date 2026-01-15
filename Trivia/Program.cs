@@ -16,6 +16,18 @@ builder.Services.AddDbContext<OpenTriviaContext>(opt =>
 builder.Services.AddScoped<IOpenTriviaTokenService, OpenTriviaTokenService>();
 builder.Services.AddScoped<IOpenTriviaApiService, OpenTriviaApiService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -34,6 +46,8 @@ if (builder.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+
+app.UseCors("AllowAngular");
 
 app.UseHttpsRedirection();
 

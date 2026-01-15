@@ -6,12 +6,12 @@ using Trivia.Services;
 namespace Trivia.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/")]
     public class OpenTriviaApiController(IOpenTriviaApiService apiService) : ControllerBase
     {
         private readonly IOpenTriviaApiService _apiService = apiService;
 
-        [HttpGet("GetQuestions")]
+        [HttpGet("getQuestions")]
         public async Task<ActionResult<List<OpenTriviaQuestion>>> GetQuestions(
             int? category = null,
             string? difficulty = null,
@@ -33,10 +33,25 @@ namespace Trivia.Controllers
             };
         }
 
-        [HttpPost("CheckAnswer")]
-        public bool CheckAnswer(string question, string answer)
+        [HttpPost("checkAnswerWithQuestion")]
+        public ActionResult<OpenTriviaQuestionAnswer> CheckAnswer(string question, string answer)
         {
-            return _apiService.CheckAnswer(question, answer);
+            var result = _apiService.CheckSingleAnswer(question, answer);
+            return Ok(result);
+        }
+
+        [HttpPost("checkAnswerWithId")]
+        public ActionResult<OpenTriviaQuestionAnswer> CheckAnswer(int questionId, string answer)
+        {
+            var result = _apiService.CheckSingleAnswer(questionId, answer);
+            return Ok(result);
+        }
+
+        [HttpPost("checkMultipleAnswers")]
+        public ActionResult<List<OpenTriviaQuestionAnswer>> CheckAnswer([FromBody] Dictionary<int, string> questionAnswers)
+        {
+            var results = _apiService.CheckMultipleAnswers(questionAnswers);
+            return Ok(results);
         }
     }
 }
