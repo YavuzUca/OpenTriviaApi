@@ -14,7 +14,7 @@ The version should start with 10.
 git --version
 ```
 
-### Running the application
+## Running the application
 
 Open a terminal and navigate to the Trivia folder:
 
@@ -44,7 +44,7 @@ dotnet run --launch-profile "http"
 
 The backend API must be available on port `5172`. Ensure that nothing else is using this port before starting the application.
 
-### Running unit tests
+## Running unit tests
 
 To run all unit tests, first go to the directory Trivia.Tests:
 ```bash
