@@ -5,12 +5,11 @@ namespace Trivia.Services
 {
     public class OpenTriviaBaseService
     {
-        protected string? baseUrl;
-        protected static readonly HttpClient httpClient = new HttpClient();
+        protected readonly HttpClient httpClient;
 
-        public OpenTriviaBaseService()
+        public OpenTriviaBaseService(HttpClient httpClient)
         {
-            baseUrl = "https://opentdb.com/";
+            this.httpClient = httpClient;
         }
 
         protected async Task<T> GenericOpenTriviaGetJSON<T>(string endpoint)

@@ -21,7 +21,11 @@ namespace Trivia.Services
         private readonly ILogger<OpenTriviaApiService> Logger;
         private readonly OpenTriviaContext DbContext;
 
-        public OpenTriviaApiService(ILogger<OpenTriviaApiService> logger, OpenTriviaContext context)
+        public OpenTriviaApiService(
+            ILogger<OpenTriviaApiService> logger, 
+            OpenTriviaContext context,
+            HttpClient httpClient
+            ) : base(httpClient)
         {
             Logger = logger;
             DbContext = context;
@@ -34,7 +38,7 @@ namespace Trivia.Services
             string? sessionToken = null,
             int amount = 10)
         {
-            string endpoint = baseUrl + "api.php?" + $"amount={amount}";
+            string endpoint = httpClient.BaseAddress + "api.php?" + $"amount={amount}";
 
             if (category != null)
                 endpoint += $"&category={category}";

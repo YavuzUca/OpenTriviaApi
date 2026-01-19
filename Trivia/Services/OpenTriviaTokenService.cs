@@ -13,17 +13,17 @@ namespace Trivia.Services
     }
     public class OpenTriviaTokenService : OpenTriviaBaseService, IOpenTriviaTokenService
     {
-        public OpenTriviaTokenService() { }
+        public OpenTriviaTokenService(HttpClient httpClient) : base(httpClient) { }
 
         public async Task<OpenTriviaTokenDTO> RequestSessionToken()
         {
-            string endpoint = baseUrl + "api_token.php?command=request";
+            string endpoint = httpClient.BaseAddress + "api_token.php?command=request";
             return await GenericOpenTriviaGetJSON<OpenTriviaTokenDTO>(endpoint);
         }
 
         public async Task<OpenTriviaTokenDTO> ResetSessionToken(string sessionToken)
         {
-            string endpoint = baseUrl + "api_token.php?command=reset&token=" + sessionToken;
+            string endpoint = httpClient.BaseAddress + "api_token.php?command=reset&token=" + sessionToken;
             return await GenericOpenTriviaGetJSON<OpenTriviaTokenDTO>(endpoint);
         }
 

@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="Trivia.Tests/Trivia.Tests.csproj" />
   <Project Path="Trivia/Trivia.csproj" />
 </Solution>
