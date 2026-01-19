@@ -1,4 +1,5 @@
 # OpenTriviaApi
+This is the backend of my project. You also need my frontend project called [OpenTriviaUI](https://github.com/YavuzUca/OpenTriviaUI).
 ## Prerequisites
 ### Required
 - .NET 10 SDK (for building and running locally)
