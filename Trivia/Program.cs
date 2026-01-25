@@ -15,9 +15,22 @@ builder.Services.AddDbContext<OpenTriviaContext>(opt =>
     opt.UseInMemoryDatabase("OpenTriviaResults"));
 builder.Services.AddScoped<IOpenTriviaTokenService, OpenTriviaTokenService>();
 builder.Services.AddScoped<IOpenTriviaApiService, OpenTriviaApiService>();
-builder.Services.AddHttpClient<OpenTriviaApiService>(client =>
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddHttpClient<IOpenTriviaApiService, OpenTriviaApiService>(client =>
 {
     client.BaseAddress = new Uri("https://opentdb.com/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+builder.Services.AddHttpClient<IOpenTriviaTokenService, OpenTriviaTokenService>(client =>
+{
+    client.BaseAddress = new Uri("https://opentdb.com/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+builder.Services.AddHttpClient<IUserService, UserService>(client =>
+{
+    client.BaseAddress = new Uri("https://jsonplaceholder.typicode.com/");
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
 builder.Services.AddCors(options =>
 {
@@ -30,11 +43,6 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
-builder.Services.AddScoped<IOpenTriviaApiService>(sp =>
-    sp.GetRequiredService<OpenTriviaApiService>());
-builder.Services.AddScoped<IOpenTriviaTokenService>(sp =>
-    sp.GetRequiredService<OpenTriviaTokenService>());
-
 
 var app = builder.Build();
 

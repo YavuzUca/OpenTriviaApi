@@ -11,5 +11,6 @@ namespace Trivia.Models
         }
 
         public DbSet<OpenTriviaResultDTO> OpenTriviaResults { get; set; } = null!;
+        public DbSet<UserDto> Users { get; set; } = null!;
     }
 }
