@@ -48,7 +48,7 @@ Run the application using the HTTP launch profile:
 dotnet run --launch-profile "http"
 ```
 
-The back-end will now run on localhost:5172. You can also try out the API's on the Swagger page without needing the UI. In order to do so, just configure the Start-up Project in Visual Studio to start the Trivia project. Do note that you cannot use the Swagger start option with the UI.
+The back-end will now run on localhost:5172. You can also try out the API's on the Swagger page without needing the UI. In order to do so, just configure the Start-up Project in Visual Studio to start the Trivia project. Do note that you the Swagger start option uses a different port than the normal start.
 
 #### Notes
 
