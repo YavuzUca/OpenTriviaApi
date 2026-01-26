@@ -12,13 +12,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<OpenTriviaContext>(opt =>
-    opt.UseInMemoryDatabase("OpenTriviaResults"));
-builder.Services.AddScoped<IOpenTriviaTokenService, OpenTriviaTokenService>();
-builder.Services.AddScoped<IOpenTriviaApiService, OpenTriviaApiService>();
-builder.Services.AddHttpClient<OpenTriviaApiService>(client =>
+    opt.UseInMemoryDatabase("OpenTriviaResults"))
+    ;
+builder.Services.AddHttpClient<IOpenTriviaApiService, OpenTriviaApiService> (client =>
 {
     client.BaseAddress = new Uri("https://opentdb.com/");
-});
+})
+    .SetHandlerLifetime(TimeSpan.FromMinutes(1));
+
+builder.Services.AddHttpClient<IOpenTriviaTokenService, OpenTriviaTokenService>(client =>
+{
+    client.BaseAddress = new Uri("https://opentdb.com/");
+})
+    .SetHandlerLifetime(TimeSpan.FromMinutes(1));
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular",
@@ -27,14 +34,10 @@ builder.Services.AddCors(options =>
             policy
                 .WithOrigins("http://localhost:4200")
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
-builder.Services.AddScoped<IOpenTriviaApiService>(sp =>
-    sp.GetRequiredService<OpenTriviaApiService>());
-builder.Services.AddScoped<IOpenTriviaTokenService>(sp =>
-    sp.GetRequiredService<OpenTriviaTokenService>());
-
 
 var app = builder.Build();
 
