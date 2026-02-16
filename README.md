@@ -1,6 +1,6 @@
 # OpenTriviaApi
 This was a simulated project in which the goal was to build a simple trivia web application. The Open Trivia Database API was used to generate questions, but it exposes the correct answers in its JSON response, making it possible for users to inspect and cheat.
-To solve this, an intermediate back-end (Java or C#) was developed with two endpoints: GET /questions to retrieve questions securely and POST /checkanswers to validate answers on the server side.
+To solve this, an intermediate back-end was developed where controller-service pattern and dependency injection was used with two endpoints: GET /questions to retrieve questions securely and POST /checkanswers to validate answers on the server side.
 A simple user interface was also created to allow users to answer questions and receive feedback.
 
 ## Prerequisites
